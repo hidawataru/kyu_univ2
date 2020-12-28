@@ -1,11 +1,20 @@
 <?php
-session_start();
+if(!isset($_SESSION)){
+	session_start();
+	} 
+	if(!isset($_SESSION['EMAIL'])){
+		header('Location: http://localhost:2964/singup.php');
+		} 
 /********** 手動設定 **********/
 $hours_st = '08:00'; //設定開始時間('hh:nn'で指定)
 $hours_end = '23:00'; //設定終了時間('hh:nn'で指定)
 $hours_margin = 30; //間隔を指定(分)
 $tbl_flg = true; //時間を横軸 → true, 縦軸 → falseにする
 $master_key = 'special';
+$color_red = '#FF4500';
+$color_blue = '#00BFFF';
+$color_yellow = '#FFD700';
+$color_green = '#228B22';
 /********** ここまで **********/
 require_once("fnc/gant1_functions.php");
 
@@ -437,43 +446,45 @@ if ( $log1 != '' || $log2 != '' ) { //どちらかのメッセージがある場
 				if ( $data_n == 0 ) { //データが無いとき
 					$timetable_output .= '<td>&nbsp;</td>'; //空白を入れる
 				} else { //データが有るとき
-					if ( $ar_block[$data_n] > 1 ) { //ブロックが2つ以上
-						if ($tbl_flg == true) { //時間軸が横だったら
-							if ($ar_user_id[$data_n] == $_SESSION['USER_ID']&&$ar_kubun_cd[$data_n] == 1) {//自分の予約データ
-                                //$block = ' colspan="'.$ar_block[$data_n].'"'; //横方向へ結合
-                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: #FF4500" '; //赤色に変えて横方向へ結合
+                    if ( $ar_block[$data_n] > 1 ) { //ブロックが2つ以上
+                        
+                        if ($tbl_flg == true) { //時間軸が横だったら
+                            if ($ar_user_id[$data_n] == $_SESSION['USER_ID']&&$ar_kubun_cd[$data_n] == 1) {//自分の予約データ
+
+                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: '.$color_red.'"' ; //赤色に変えて横方向へ結合
 
                             }elseif ($ar_kubun_cd[$data_n] == 2) {//修理の場合
-                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: #228B22" '; //緑色に変えて横方向へ結合
+                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: '.$color_green.'"' ; //緑色に変えて横方向へ結合
 
 
                             }elseif ($ar_kubun_cd[$data_n] == 3) {//その他の場合
-                                    $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: #FFD700" '; //黄色を変えて横方向へ結合
+                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: '.$color_yellow.'"' ; //黄色を変えて横方向へ結合
                                 
                             
                             }elseif ($ar_user_id[$data_n] <> $_SESSION['USER_ID']&&$ar_kubun_cd[$data_n] == 1) {//自分の予約データ以外
-                                //$block = ' colspan="'.$ar_block[$data_n].'"'; //横方向へ結合
-                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: #00BFFF" '; //青色に変えて横方向へ結合
+
+                                $block = ' colspan="'.$ar_block[$data_n].'" style="background-color: '.$color_blue.'"' ; //青色に変えて横方向へ結合
                             }
-							$j = $j + $ar_block[$data_n] - 1; //colspan結合ぶん横軸数を繰り上げ
-							
-						} else { //時間軸が縦だったら
+                            $j = $j + $ar_block[$data_n] - 1; //colspan結合ぶん横軸数を繰り上げ
+                            
+                        } else { //時間軸が縦だったら
 							$block = ' rowspan="'.$ar_block[$data_n].'"'; //縦方向へ結合
 							$span_n[$j] = $ar_block[$data_n] - 1; //rowspan結合数を格納→冒頭で繰り上げ処理
 						}
-					} elseif ( $ar_block[$data_n] = 1 ) { //ブロックが1つ
+                    }
+                    elseif ( $ar_block[$data_n] = 1 ) { //ブロックが1つ
                         if ($ar_user_id[$data_n] == $_SESSION['USER_ID']&&$ar_kubun_cd[$data_n] == 1) {//自分が予約したデータ
-                            $block = ' style="background-color: #FF4500" '; //赤色出力
+                            $block = ' style="background-color: '.$color_red.'"' ; //赤色出力
+                            
                         }elseif ($ar_kubun_cd[$data_n] == 2) {//修理の場合
-                            $block = ' style="background-color: #228B22" '; //緑色出力
+                            $block = ' style="background-color: '.$color_green.'"' ; //緑色出力
                         }elseif ($ar_kubun_cd[$data_n] == 3) {//その他の場合
-                            $block = ' style="background-color: #FFD700" '; //黄色出力
+                            $block = ' style="background-color: '.$color_yellow.'"' ; //黄色出力
                         }elseif ($ar_user_id[$data_n] <> $_SESSION['USER_ID']&&$ar_kubun_cd[$data_n] == 1) {//自分の予約データ以外
-                            $block = ' style="background-color: #00BFFF" '; //青色出力
+                            $block = ' style="background-color: '.$color_blue.'"' ; //青色出力
                         }
                     }
-					
-					$cts = h($ar_name[$data_n]).'（'.h($ar_sect[$data_n]).'）<br />'.h($ar_notes[$data_n]); //htmlエスケープしながら中身成形
+                    $cts = h($ar_name[$data_n]).'（'.h($ar_sect[$data_n]).'）<br />'.h($ar_notes[$data_n]); //htmlエスケープしながら中身成形					$cts = h($ar_name[$data_n]).'（'.h($ar_sect[$data_n]).'）<br />'.h($ar_notes[$data_n]); //htmlエスケープしながら中身成形
 					if ( $ar_kwd[$data_n] === '' ) { //削除キー無
 						//onsubmitでJavaScriptを呼び出す
 						$dlt = '<form action="" method="post" onsubmit="return dltChk()"><input type="hidden" name="date" value="'.$date.'" /><input type="hidden" name="id" value="'.$ar_id[$data_n].'" /><input type="submit" name="delete" value="×"></form>';
